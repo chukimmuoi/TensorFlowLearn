@@ -3,13 +3,22 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 
+# hyperparameter ở đây đại diện cho:
+#   + learning rate: Một số, được sử dụng để đào tạo mô hình.
+#                    Learning rate sẽ được nhân với độ dốc sau mỗi lần lặp (gradient step).
+#   + epochs       : Một lần đào tạo trên toàn bộ tập dữ liệu. Sao cho mỗi dữ liệu được thấy một lần.
+#                    Do đó 1 epochs đại diện cho số lần lặp (iterations) để đào tạo dữ liệu kích thước là N / batch_size
+#                    Cho đến khi mỗi dữ liệu được thấy một lần. Tối ưu nhấ là N / batch_size là một số nguyên.
+#   + batch size   : Số dữ liệu sử dụng trong một batch.
+#                    Vì quá trình đào tạo rất nhiều dữ liệu gây tốn bộ nhớ. Nên chia nhỏ để dễ đào tạo.
+
 # @title Define the functions that build and train a model
 def build_model(my_learning_rate):
     """Tạo và biên dịch mô hình hồi quy tuyến tính đơn giản."""
     """Create and compile a simple linear regression model."""
     # Hầu hết các mô hình tf.keras đơn giản là tuần tự.
     # Most simple tf.keras models are sequential.
-    # Một mô hình tuần tự chứa một hoặc nhiều lớp.
+    # Một mô hình tuần tự chứa một hoặc nhiều layers (lớp).
     # A sequential model contains one or more layers.
     model = tf.keras.models.Sequential()
 
@@ -22,7 +31,7 @@ def build_model(my_learning_rate):
 
     # Biên dịch địa hình mô hình thành mã
     # Compile the model topography into code that
-    # TensorFlow có thể thực thi hiệu quả. Cấu hình đào tạo để giảm thiểu lỗi bình phương trung bình của mô hình.
+    # TensorFlow có thể thực thi hiệu quả. Cấu hình đào tạo để giảm mean squared error của mô hình.
     # TensorFlow can efficiently execute. Configure training to minimize the model's mean squared error.
     model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=my_learning_rate),
                   loss="mean_squared_error",
@@ -32,47 +41,47 @@ def build_model(my_learning_rate):
 
 
 def train_model(model, feature, label, epochs, batch_size):
-    """Huấn luyện mô hình bằng cách cho nó ăn dữ liệu."""
+    """Huấn luyện mô hình bằng dữ liệu."""
     """Train the model by feeding it data."""
 
-    # Cung cấp các giá trị tính năng và các giá trị nhãn cho mô hình.
+    # Cung cấp các giá trị feature và các giá trị label cho mô hình.
     # Feed the feature values and the label values to the model.
-    # Mô hình sẽ đào tạo cho số lượng kỷ nguyên được chỉ định,
+    # Mô hình sẽ đào tạo theo số epochs được chỉ định,
     # The model will train for the specified number of epochs,
-    # dần dần tìm hiểu làm thế nào các giá trị tính năng liên quan đến các giá trị nhãn
+    # dần dần tìm hiểu làm thế nào các giá trị feature liên quan đến các giá trị label
     # gradually learning how the feature values relate to the label values.
     history = model.fit(x=feature,
                         y=label,
-                        batch_size=None,
+                        batch_size=batch_size,
                         epochs=epochs)
 
-    # Tập hợp trọng lượng và thiên vị của mô hình được đào tạo.
+    # Tập hợp weight và bias của mô hình được đào tạo.
     # Gather the trained model's weight and bias.
     trained_weight = model.get_weights()[0]
     trained_bias = model.get_weights()[1]
 
-    # Danh sách các kỷ nguyên được lưu trữ riêng biệt với phần còn lại của lịch sử.
+    # Danh sách epoch được lưu trữ riêng biệt với phần còn lại của history.
     # The list of epochs is stored separately from the rest of history.
     epochs = history.epoch
 
-    # Tập hợp lịch sử (ảnh chụp nhanh) của mỗi kỷ nguyên.
+    # Tập hợp history (ảnh chụp nhanh) của mỗi epoch.
     # Gather the history (a snapshot) of each epoch.
     hist = pd.DataFrame(history.history)
 
-    # Cụ thể thu thập lỗi bình phương gốc của mô hình tại mỗi epoch.
+    # Thu thập root mean squared error của mô hình tại mỗi epoch.
     # Specifically gather the model's root mean squared error at each epoch.
     rmse = hist["root_mean_squared_error"]
 
     return trained_weight, trained_bias, epochs, rmse
 
 
-print("Đã xác định created_model và train_model")
+print("Đã tạo function created_model và train_model")
 print("Defined create_model and train_model")
 
 
 # @title Define the plotting functions
 def plot_the_model(trained_weight, trained_bias, feature, label):
-    """Vẽ mô hình được đào tạo chống lại các tính năng đào tạo và nhãn."""
+    """Vẽ mô hình được đào tạo với feature và label."""
     """Plot the trained model against the training feature and label."""
 
     # Dán nhãn các trục.
@@ -96,11 +105,11 @@ def plot_the_model(trained_weight, trained_bias, feature, label):
 
     # Kết xuất biểu đồ phân tán và đường màu đỏ.
     # Render the scatter plot and the red line.
-    plt.show()
+    # plt.show()
 
 
 def plot_the_loss_curve(epochs, rmse):
-    """Vẽ đường cong mất, cho thấy mất so với kỷ nguyên."""
+    """Vẽ đường cong loss, cho thấy loss so với epoch."""
     """Plot the loss curve, which shows loss vs. epoch."""
 
     plt.figure()
@@ -113,14 +122,14 @@ def plot_the_loss_curve(epochs, rmse):
     plt.show()
 
 
-print("Đã xác định các hàm plot_the_model và plot_the_loss_curve.")
+print("Đã tạo function plot_the_model và plot_the_loss_curve.")
 print("Defined the plot_the_model and plot_the_loss_curve functions.")
 
 my_feature = ([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0])
 my_label = ([5.0, 8.8, 9.6, 14.2, 18.8, 19.5, 21.4, 26.8, 28.9, 32.0, 33.8, 38.2])
 
-learning_rate = 0.01
-epochs = 10
+learning_rate = 0.1
+epochs = 50
 my_batch_size = 12
 
 my_model = build_model(learning_rate)
