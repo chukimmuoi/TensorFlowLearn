@@ -3,13 +3,13 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 
-# hyperparameter ở đây đại diện cho:
-#   + learning rate: Một số, được sử dụng để đào tạo mô hình.
-#                    Learning rate sẽ được nhân với độ dốc sau mỗi lần lặp (gradient step).
-#   + epochs       : Một lần đào tạo trên toàn bộ tập dữ liệu. Sao cho mỗi dữ liệu được thấy một lần.
-#                    Do đó 1 epochs đại diện cho số lần lặp (iterations) để đào tạo dữ liệu kích thước là N / batch_size
-#                    Cho đến khi mỗi dữ liệu được thấy một lần. Tối ưu nhấ là N / batch_size là một số nguyên.
-#   + batch size   : Số dữ liệu sử dụng trong một batch.
+# Hyperparameter ở đây đại diện cho:
+#   + Learning rate: Một số, được sử dụng để đào tạo mô hình.
+#                    Learning rate sẽ được nhân với độ dốc sau mỗi lần lặp (Gradient step).
+#   + Epochs       : Một lần đào tạo trên toàn bộ tập dữ liệu. Sao cho mỗi dữ liệu được thấy một lần.
+#                    Do đó 1 Epochs đại diện cho số lần lặp (Iterations) để đào tạo dữ liệu kích thước là N/Batch_size
+#                    Cho đến khi mỗi dữ liệu được thấy một lần. Tối ưu nhấ là N/Batch_size là một số nguyên.
+#   + Batch size   : Số dữ liệu sử dụng trong một Batch.
 #                    Vì quá trình đào tạo rất nhiều dữ liệu gây tốn bộ nhớ. Nên chia nhỏ để dễ đào tạo.
 
 # @title Define the functions that build and train a model
@@ -18,7 +18,7 @@ def build_model(my_learning_rate):
     """Create and compile a simple linear regression model."""
     # Hầu hết các mô hình tf.keras đơn giản là tuần tự.
     # Most simple tf.keras models are sequential.
-    # Một mô hình tuần tự chứa một hoặc nhiều layers (lớp).
+    # Một mô hình tuần tự chứa một hoặc nhiều Layers (lớp).
     # A sequential model contains one or more layers.
     model = tf.keras.models.Sequential()
 
@@ -31,7 +31,7 @@ def build_model(my_learning_rate):
 
     # Biên dịch địa hình mô hình thành mã
     # Compile the model topography into code that
-    # TensorFlow có thể thực thi hiệu quả. Cấu hình đào tạo để giảm mean squared error của mô hình.
+    # TensorFlow có thể thực thi hiệu quả. Cấu hình đào tạo để giảm Mean Squared Error của mô hình.
     # TensorFlow can efficiently execute. Configure training to minimize the model's mean squared error.
     model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=my_learning_rate),
                   loss="mean_squared_error",
@@ -44,31 +44,31 @@ def train_model(model, feature, label, epochs, batch_size):
     """Huấn luyện mô hình bằng dữ liệu."""
     """Train the model by feeding it data."""
 
-    # Cung cấp các giá trị feature và các giá trị label cho mô hình.
+    # Cung cấp các giá trị Feature và các giá trị Label cho mô hình.
     # Feed the feature values and the label values to the model.
-    # Mô hình sẽ đào tạo theo số epochs được chỉ định,
+    # Mô hình sẽ đào tạo theo số Epochs được chỉ định,
     # The model will train for the specified number of epochs,
-    # dần dần tìm hiểu làm thế nào các giá trị feature liên quan đến các giá trị label
+    # dần dần tìm hiểu làm thế nào các giá trị Feature liên quan đến các giá trị Label
     # gradually learning how the feature values relate to the label values.
     history = model.fit(x=feature,
                         y=label,
                         batch_size=batch_size,
                         epochs=epochs)
 
-    # Tập hợp weight và bias của mô hình được đào tạo.
+    # Tập hợp Weight và Bias của mô hình được đào tạo.
     # Gather the trained model's weight and bias.
     trained_weight = model.get_weights()[0]
     trained_bias = model.get_weights()[1]
 
-    # Danh sách epoch được lưu trữ riêng biệt với phần còn lại của history.
+    # Danh sách Epoch được lưu trữ riêng biệt với phần còn lại của History.
     # The list of epochs is stored separately from the rest of history.
     epochs = history.epoch
 
-    # Tập hợp history (ảnh chụp nhanh) của mỗi epoch.
+    # Tập hợp History (ảnh chụp nhanh) của mỗi Epoch.
     # Gather the history (a snapshot) of each epoch.
     hist = pd.DataFrame(history.history)
 
-    # Thu thập root mean squared error của mô hình tại mỗi epoch.
+    # Thu thập Root Mean Squared Error của mô hình tại mỗi Epoch.
     # Specifically gather the model's root mean squared error at each epoch.
     rmse = hist["root_mean_squared_error"]
 
@@ -81,7 +81,7 @@ print("Defined create_model and train_model")
 
 # @title Define the plotting functions
 def plot_the_model(trained_weight, trained_bias, feature, label):
-    """Vẽ mô hình được đào tạo với feature và label."""
+    """Vẽ mô hình được đào tạo với Feature và Label."""
     """Plot the trained model against the training feature and label."""
 
     # Dán nhãn các trục.
@@ -89,7 +89,7 @@ def plot_the_model(trained_weight, trained_bias, feature, label):
     plt.xlabel("feature")
     plt.ylabel("label")
 
-    # Vẽ các giá trị tính năng so với các giá trị nhãn.
+    # Vẽ các giá trị Feature so với các giá trị Label.
     # Plot the feature values vs. label values.
     plt.scatter(feature, label)
 
@@ -109,7 +109,7 @@ def plot_the_model(trained_weight, trained_bias, feature, label):
 
 
 def plot_the_loss_curve(epochs, rmse):
-    """Vẽ đường cong loss, cho thấy loss so với epoch."""
+    """Vẽ đường cong Loss, cho thấy Loss so với Epoch."""
     """Plot the loss curve, which shows loss vs. epoch."""
 
     plt.figure()
@@ -138,3 +138,11 @@ trained_weight, trained_bias, epochs, rmse = train_model(my_model, my_feature,
                                                          my_batch_size)
 plot_the_model(trained_weight, trained_bias, my_feature, my_label)
 plot_the_loss_curve(epochs, rmse)
+
+# Loss nên giảm dần, lúc đầu giảm nhanh, sau đó sẽ chậm dần cho đến khi gần bằng 0
+# Nếu Loss không hội tụ ---> tăng Epoch
+# Nếu Loss giảm chậm ---> tăng Learning rate, tuy nhiên Learning rate quá cao cũng sẽ làm Loss không hộ tụ
+# Nếu Loss thay đổi liên tục dạng sóng ---> giảm Learning rate
+# Giảm Learning rate + tăng Epoch
+#                    + tăng Batch size
+# Batch size không nên quá nhỏ
