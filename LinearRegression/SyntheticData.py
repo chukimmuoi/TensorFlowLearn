@@ -3,6 +3,10 @@ import tensorflow as tf
 from matplotlib import pyplot as plt
 
 
+# Square loss: = (observation - prediction(x))^2
+#              = (y - y')^2
+# Mean square error: MSE = 1/N * sum((y - prediction(x))^2)
+
 # Hyperparameter ở đây đại diện cho:
 #   + Learning rate: Một số, được sử dụng để đào tạo mô hình.
 #                    Learning rate sẽ được nhân với độ dốc sau mỗi lần lặp (Gradient step).
