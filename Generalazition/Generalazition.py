@@ -99,6 +99,8 @@ def plot_the_loss_curve(epochs, mae_training, mae_validation):
 
 print("Defined the plot_the_loss_curve function.")
 
+# @title Double-click to view the complete implementation.
+
 # The following variables are the hyperparameters.
 learning_rate = 0.08
 epochs = 70
@@ -106,7 +108,7 @@ batch_size = 100
 
 # Split the original training set into a reduced training set and a
 # validation set.
-validation_split = 0.2
+validation_split = 0.35
 
 # Identify the feature and the label.
 my_feature = "median_income"  # the median income on a specific city block.
@@ -117,9 +119,13 @@ my_label = "median_house_value"  # the median value of a house on a specific cit
 # Discard any pre-existing version of the model.
 my_model = None
 
-# Invoke the functions to build and train the model.
+# Shuffle the examples.
+shuffled_train_df = train_df.reindex(np.random.permutation(train_df.index))
+
+# Invoke the functions to build and train the model. Train on the shuffled
+# training set.
 my_model = build_model(learning_rate)
-epochs, rmse, history = train_model(my_model, train_df, my_feature,
+epochs, rmse, history = train_model(my_model, shuffled_train_df, my_feature,
                                     my_label, epochs, batch_size,
                                     validation_split)
 
