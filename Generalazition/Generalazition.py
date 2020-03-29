@@ -65,7 +65,8 @@ def train_model(model, df, feature, label, my_epochs,
 print("Defined the build_model and train_model functions.")
 
 # Phân tích data.
-# Ở đây phát hiện data được sắp xêp theo thứ tự tăng dần của cột longitude.
+# Ở đây phát hiện data được sắp xếp theo thứ tự tăng dần của cột longitude.
+# Để đảm bảo không ảnh hưởng đến quá trình training, nên xáo trộn dữ liệu.
 print(train_df.head(n=1000))
 
 
@@ -119,6 +120,7 @@ my_label = "median_house_value"  # the median value of a house on a specific cit
 # Discard any pre-existing version of the model.
 my_model = None
 
+# Xáo trộn dữ liệu.
 # Shuffle the examples.
 shuffled_train_df = train_df.reindex(np.random.permutation(train_df.index))
 
@@ -131,3 +133,9 @@ epochs, rmse, history = train_model(my_model, shuffled_train_df, my_feature,
 
 plot_the_loss_curve(epochs, history["root_mean_squared_error"],
                     history["val_root_mean_squared_error"])
+
+# Kiểm tra mô hình với dữ liệu test.
+x_test = test_df[my_feature]
+y_test = test_df[my_label]
+
+results = my_model.evaluate(x_test, y_test, batch_size=batch_size)
