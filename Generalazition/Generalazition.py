@@ -25,6 +25,7 @@ def build_model(my_learning_rate):
     # Most simple tf.keras models are sequential.
     model = tf.keras.models.Sequential()
 
+    # Thêm một lớp tuyến tính vào mô hình để mang lại hồi quy tuyến tính đơn giản.
     # Add one linear layer to the model to yield a simple linear regressor.
     model.add(tf.keras.layers.Dense(units=1, input_shape=(1,)))
 
@@ -131,8 +132,7 @@ epochs, rmse, history = train_model(my_model, shuffled_train_df, my_feature,
                                     my_label, epochs, batch_size,
                                     validation_split)
 
-plot_the_loss_curve(epochs, history["root_mean_squared_error"],
-                    history["val_root_mean_squared_error"])
+plot_the_loss_curve(epochs, history["root_mean_squared_error"], history["val_root_mean_squared_error"])
 
 # Kiểm tra mô hình với dữ liệu test.
 x_test = test_df[my_feature]
