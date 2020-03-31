@@ -53,7 +53,6 @@ latitude_boundaries = list(np.arange(int(min(train_df['latitude'])),
                                      resolution_in_degrees))
 latitude = tf.feature_column.bucketized_column(latitude_as_a_numeric_column,
                                                latitude_boundaries)
-feature_columns.append(latitude)
 
 # Tạo một cột bucket feature để biểu thị kinh độ.
 # Create a bucket feature column for longitude.
@@ -63,12 +62,17 @@ longitude_boundaries = list(np.arange(int(min(train_df['longitude'])),
                                       resolution_in_degrees))
 longitude = tf.feature_column.bucketized_column(longitude_as_a_numeric_column,
                                                 longitude_boundaries)
-feature_columns.append(longitude)
+
+# Tạo một feature cross của vĩ độ và kinh độ.
+# Create a feature cross of latitude and longitude.
+latitude_x_longitude = tf.feature_column.crossed_column([latitude, longitude], hash_bucket_size=100)
+crossed_feature = tf.feature_column.indicator_column(latitude_x_longitude)
+feature_columns.append(crossed_feature)
 
 # Chuyển đổi danh sách các cột tính năng thành một Layer mà cuối cùng sẽ trở thành một phần của mô hình.
 # Convert the list of feature columns into a layer that will ultimately become part of the model.
 # Understanding layers is not important right now.
-buckets_feature_layer = layers.DenseFeatures(feature_columns)
+feature_cross_feature_layer = layers.DenseFeatures(feature_columns)
 
 
 # @title Define functions to create and train a model, and a plotting function
@@ -143,7 +147,7 @@ label_name = 'median_house_value'
 
 # Xây dựng mô hình, lần này đi qua trong buckets_feature_layer.
 # Build the model, this time passing in the buckets_feature_layer.
-my_model = create_model(learning_rate, buckets_feature_layer)
+my_model = create_model(learning_rate, feature_cross_feature_layer)
 
 # Huấn luyện mô hình trên tập huấn luyện.
 # Train the model on the training set.
