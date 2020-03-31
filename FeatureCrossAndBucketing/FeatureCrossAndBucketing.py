@@ -39,7 +39,7 @@ test_df["median_house_value"] /= scale_factor
 # Shuffle the examples
 train_df = train_df.reindex(np.random.permutation(train_df.index))
 
-resolution_in_degrees = 1.0
+resolution_in_degrees = 0.4
 
 # Tạo một danh sách trống mà cuối cùng sẽ giữ tất cả các cột tính năng.
 # Create an empty list that will eventually hold all feature columns.
@@ -141,7 +141,7 @@ print("Defined the create_model, train_model, and plot_the_loss_curve functions.
 # Các biến sau đây là hyperparameters.
 # The following variables are the hyperparameters.
 learning_rate = 0.04
-epochs = 35
+epochs = 70
 batch_size = 100
 label_name = 'median_house_value'
 
