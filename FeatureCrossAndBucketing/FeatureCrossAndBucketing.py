@@ -39,23 +39,36 @@ test_df["median_house_value"] /= scale_factor
 # Shuffle the examples
 train_df = train_df.reindex(np.random.permutation(train_df.index))
 
+resolution_in_degrees = 1.0
+
 # Tạo một danh sách trống mà cuối cùng sẽ giữ tất cả các cột tính năng.
 # Create an empty list that will eventually hold all feature columns.
 feature_columns = []
 
-# Tạo một cột tính năng số để biểu thị vĩ độ.
-latitude = tf.feature_column.numeric_column("latitude")
+# Tạo một cột bucket feature để biểu thị vĩ độ.
+# Create a bucket feature column for latitude.
+latitude_as_a_numeric_column = tf.feature_column.numeric_column("latitude")
+latitude_boundaries = list(np.arange(int(min(train_df['latitude'])),
+                                     int(max(train_df['latitude'])),
+                                     resolution_in_degrees))
+latitude = tf.feature_column.bucketized_column(latitude_as_a_numeric_column,
+                                               latitude_boundaries)
 feature_columns.append(latitude)
 
-# Tạo một cột tính năng số để biểu thị kinh độ.
-# Create a numerical feature column to represent longitude.
-longitude = tf.feature_column.numeric_column("longitude")
+# Tạo một cột bucket feature để biểu thị kinh độ.
+# Create a bucket feature column for longitude.
+longitude_as_a_numeric_column = tf.feature_column.numeric_column("longitude")
+longitude_boundaries = list(np.arange(int(min(train_df['longitude'])),
+                                      int(max(train_df['longitude'])),
+                                      resolution_in_degrees))
+longitude = tf.feature_column.bucketized_column(longitude_as_a_numeric_column,
+                                                longitude_boundaries)
 feature_columns.append(longitude)
 
 # Chuyển đổi danh sách các cột tính năng thành một Layer mà cuối cùng sẽ trở thành một phần của mô hình.
 # Convert the list of feature columns into a layer that will ultimately become part of the model.
 # Understanding layers is not important right now.
-fp_feature_layer = layers.DenseFeatures(feature_columns)
+buckets_feature_layer = layers.DenseFeatures(feature_columns)
 
 
 # @title Define functions to create and train a model, and a plotting function
@@ -123,14 +136,14 @@ print("Defined the create_model, train_model, and plot_the_loss_curve functions.
 
 # Các biến sau đây là hyperparameters.
 # The following variables are the hyperparameters.
-learning_rate = 0.05
-epochs = 30
+learning_rate = 0.04
+epochs = 35
 batch_size = 100
 label_name = 'median_house_value'
 
-# Tạo và biên dịch mô hình.
-# Create and compile the model's topography.
-my_model = create_model(learning_rate, fp_feature_layer)
+# Xây dựng mô hình, lần này đi qua trong buckets_feature_layer.
+# Build the model, this time passing in the buckets_feature_layer.
+my_model = create_model(learning_rate, buckets_feature_layer)
 
 # Huấn luyện mô hình trên tập huấn luyện.
 # Train the model on the training set.
