@@ -187,17 +187,13 @@ learning_rate = 0.001
 epochs = 20
 batch_size = 100
 label_name = "median_house_value_is_high"
-classification_threshold = 0.52
 
-# Dưới đây là định nghĩa cập nhật của METRICS:
-# Here is the updated definition of METRICS:
+# AUC là số liệu "tóm tắt" hợp lý cho các mô hình phân loại.
+# Dưới đây là định nghĩa cập nhật về METRICS để đo AUC:
+# AUC is a reasonable "summary" metric for classification models.
+# Here is the updated definition of METRICS to measure AUC:
 METRICS = [
-    tf.keras.metrics.BinaryAccuracy(name='accuracy',
-                                    threshold=classification_threshold),
-    tf.keras.metrics.Precision(thresholds=classification_threshold,
-                               name='precision'),
-    tf.keras.metrics.Recall(thresholds=classification_threshold,
-                            name="recall"),
+      tf.keras.metrics.AUC(num_thresholds=100, name='auc'),
 ]
 
 # Thiết lập địa hình của mô hình.
@@ -211,7 +207,7 @@ epochs, hist = train_model(my_model, train_df_norm, epochs,
 
 # Vẽ đồ thị của số liệu so với epoch.
 # Plot a graph of the metric(s) vs. epochs.
-list_of_metrics_to_plot = ['accuracy', 'precision', 'recall']
+list_of_metrics_to_plot = ['auc']
 
 plot_curve(epochs, hist, list_of_metrics_to_plot)
 
