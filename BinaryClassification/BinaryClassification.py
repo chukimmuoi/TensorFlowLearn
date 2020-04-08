@@ -187,7 +187,7 @@ learning_rate = 0.001
 epochs = 20
 batch_size = 100
 label_name = "median_house_value_is_high"
-classification_threshold = 0.35
+classification_threshold = 0.52
 
 # Dưới đây là định nghĩa cập nhật của METRICS:
 # Here is the updated definition of METRICS:
