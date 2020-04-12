@@ -131,6 +131,8 @@ def create_model(my_learning_rate, my_feature_layer):
                                     kernel_regularizer=tf.keras.regularizers.l2(l=0.04),
                                     name='Hidden1'))
 
+    model.add(tf.keras.layers.Dropout(rate=0.25))
+
     # Xác định lớp ẩn thứ hai với 12 nút.
     # Define the second hidden layer with 12 nodes.
     model.add(tf.keras.layers.Dense(units=6,
