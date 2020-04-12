@@ -126,13 +126,13 @@ def create_model(my_learning_rate, my_feature_layer):
 
     # Xác định lớp ẩn đầu tiên với 20 nút.
     # Define the first hidden layer with 20 nodes.
-    model.add(tf.keras.layers.Dense(units=20,
+    model.add(tf.keras.layers.Dense(units=10,
                                     activation='relu',
                                     name='Hidden1'))
 
     # Xác định lớp ẩn thứ hai với 12 nút.
     # Define the second hidden layer with 12 nodes.
-    model.add(tf.keras.layers.Dense(units=12,
+    model.add(tf.keras.layers.Dense(units=6,
                                     activation='relu',
                                     name='Hidden2'))
 
