@@ -102,7 +102,7 @@ def plot_the_loss_curve(epochs, mse):
 print("Defined the plot_the_loss_curve function.")
 
 
-def create_model(my_learning_rate, feature_layer):
+def create_model(my_learning_rate, my_feature_layer):
     """Tạo và biên dịch mô hình hồi quy tuyến tính đơn giản"""
     """Create and compile a simple linear regression model."""
     # Hầu hết các mô hình tf.keras đơn giản là tuần tự.
@@ -111,22 +111,45 @@ def create_model(my_learning_rate, feature_layer):
 
     # Thêm lớp chứa các cột tính năng cho mô hình.
     # Add the layer containing the feature columns to the model.
-    model.add(feature_layer)
+    model.add(my_feature_layer)
 
-    # Thêm một lớp tuyến tính vào mô hình để mang lại hồi quy tuyến tính đơn giản.
-    # Add one linear layer to the model to yield a simple linear regressor.
-    model.add(tf.keras.layers.Dense(units=1, input_shape=(1,)))
+    # Mô tả địa hình của mô hình bằng cách gọi phương thức tf.keras.layers.Dense một lần cho mỗi lớp.
+    # Chúng tôi đã chỉ định các đối số sau đây:
+    #     * units chỉ định số lượng nút trong lớp này.
+    #     * activation chỉ định chức năng kích hoạt (Rectified Linear Unit - ReLU).
+    #     * name chỉ là một chuỗi có thể hữu ích khi gỡ lỗi.
+    # Describe the topography of the model by calling the tf.keras.layers.Dense
+    # method once for each layer. We've specified the following arguments:
+    #   * units specifies the number of nodes in this layer.
+    #   * activation specifies the activation function (Rectified Linear Unit).
+    #   * name is just a string that can be useful when debugging.
 
-    # Xây dựng các lớp thành một mô hình mà TensorFlow có thể thực thi.
-    # Construct the layers into a model that TensorFlow can execute.
-    model.compile(optimizer=tf.keras.optimizers.RMSprop(lr=my_learning_rate),
+    # Xác định lớp ẩn đầu tiên với 20 nút.
+    # Define the first hidden layer with 20 nodes.
+    model.add(tf.keras.layers.Dense(units=20,
+                                    activation='relu',
+                                    name='Hidden1'))
+
+    # Xác định lớp ẩn thứ hai với 12 nút.
+    # Define the second hidden layer with 12 nodes.
+    model.add(tf.keras.layers.Dense(units=12,
+                                    activation='relu',
+                                    name='Hidden2'))
+
+    # Xác định lớp đầu ra.
+    # Define the output layer.
+    model.add(tf.keras.layers.Dense(units=1,
+                                    name='Output'))
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(lr=my_learning_rate),
                   loss="mean_squared_error",
                   metrics=[tf.keras.metrics.MeanSquaredError()])
 
     return model
 
 
-def train_model(model, dataset, epochs, batch_size, label_name):
+def train_model(model, dataset, epochs, label_name,
+                batch_size=None):
     """Đưa dữ liệu vào mô hình để huấn luyện nó."""
     """Feed a dataset into the model in order to train it."""
 
@@ -137,13 +160,18 @@ def train_model(model, dataset, epochs, batch_size, label_name):
     history = model.fit(x=features, y=label, batch_size=batch_size,
                         epochs=epochs, shuffle=True)
 
-    # Nhận thông tin chi tiết sẽ hữu ích cho việc vẽ đường cong mất mát.
-    # Get details that will be useful for plotting the loss curve.
+    # Danh sách các epochs được lưu trữ riêng biệt với phần còn lại của lịch sử.
+    # The list of epochs is stored separately from the rest of history.
     epochs = history.epoch
-    hist = pd.DataFrame(history.history)
-    rmse = hist["mean_squared_error"]
 
-    return epochs, rmse
+    # Để theo dõi tiến trình đào tạo, hãy thu thập một ảnh chụp nhanh về
+    # mean squared error của mô hình ở mỗi kỷ nguyên.
+    # To track the progression of training, gather a snapshot
+    # of the model's mean squared error at each epoch.
+    hist = pd.DataFrame(history.history)
+    mse = hist["mean_squared_error"]
+
+    return epochs, mse
 
 
 print("Defined the create_model and train_model functions.")
@@ -151,8 +179,11 @@ print("Defined the create_model and train_model functions.")
 # Các biến sau đây là hyperparameters.
 # The following variables are the hyperparameters.
 learning_rate = 0.01
-epochs = 15
+epochs = 20
 batch_size = 1000
+
+# Chỉ định label
+# Specify the label
 label_name = "median_house_value"
 
 # Thiết lập địa hình của mô hình.
@@ -160,11 +191,19 @@ label_name = "median_house_value"
 my_model = create_model(learning_rate, my_feature_layer)
 
 # Huấn luyện mô hình trên tập huấn luyện chuẩn hóa.
-# Train the model on the normalized training set.
-epochs, mse = train_model(my_model, train_df_norm, epochs, batch_size, label_name)
+# Chúng tôi sẽ chuyển toàn bộ tập huấn luyện đã chuẩn hóa,
+# nhưng mô hình sẽ chỉ sử dụng các tính năng được xác định bởi feature_layer.
+# Train the model on the normalized training set. We're passing the entire
+# normalized training set, but the model will only use the features
+# defined by the feature_layer.
+epochs, mse = train_model(my_model, train_df_norm, epochs,
+                          label_name, batch_size)
 plot_the_loss_curve(epochs, mse)
 
+# Sau khi xây dựng mô hình dựa trên tập huấn luyện, hãy kiểm tra mô hình đó với tập kiểm tra.
+# After building a model against the training set, test that model
+# against the test set.
 test_features = {name: np.array(value) for name, value in test_df_norm.items()}
 test_label = np.array(test_features.pop(label_name))  # isolate the label
-print("\n Evaluate the linear regression model against the test set:")
+print("\n Evaluate the new model against the test set:")
 my_model.evaluate(x=test_features, y=test_label, batch_size=batch_size)
