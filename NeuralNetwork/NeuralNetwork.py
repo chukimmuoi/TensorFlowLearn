@@ -128,12 +128,14 @@ def create_model(my_learning_rate, my_feature_layer):
     # Define the first hidden layer with 20 nodes.
     model.add(tf.keras.layers.Dense(units=10,
                                     activation='relu',
+                                    kernel_regularizer=tf.keras.regularizers.l2(l=0.04),
                                     name='Hidden1'))
 
     # Xác định lớp ẩn thứ hai với 12 nút.
     # Define the second hidden layer with 12 nodes.
     model.add(tf.keras.layers.Dense(units=6,
                                     activation='relu',
+                                    kernel_regularizer=tf.keras.regularizers.l2(l=0.04),
                                     name='Hidden2'))
 
     # Xác định lớp đầu ra.
@@ -178,8 +180,8 @@ print("Defined the create_model and train_model functions.")
 
 # Các biến sau đây là hyperparameters.
 # The following variables are the hyperparameters.
-learning_rate = 0.01
-epochs = 20
+learning_rate = 0.007
+epochs = 140
 batch_size = 1000
 
 # Chỉ định label
