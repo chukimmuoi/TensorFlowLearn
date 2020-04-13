@@ -64,10 +64,10 @@ def create_model(my_learning_rate):
     model.add(tf.keras.layers.Flatten(input_shape=(28, 28)))
 
     # Define the first hidden layer.
-    model.add(tf.keras.layers.Dense(units=32, activation='relu'))
+    model.add(tf.keras.layers.Dense(units=256, activation='relu'))
 
     # Define a dropout regularization layer.
-    model.add(tf.keras.layers.Dropout(rate=0.2))
+    model.add(tf.keras.layers.Dropout(rate=0.4))
 
     # Define the output layer. The units parameter is set to 10 because
     # the model must choose among 10 possible output values (representing
